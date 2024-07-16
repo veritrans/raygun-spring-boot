@@ -1,0 +1,172 @@
+image: gradle:7.5.1-jdk11
+
+before_script:
+  - GRADLE_USER_HOME="$(pwd)/.gradle"
+  - export GRADLE_USER_HOME
+
+build:
+  stage: build
+  script:
+    - gradle raygun-spring-boot-starter:jar
+    - gradle raygun-spring-boot-starter-example:jar
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - .gradle
+      - raygun-spring-boot-starter/build
+      - raygun-spring-boot-starter-example/build
+
+check:starter:
+  extends:
+    - .pull-build-cache
+  stage: test
+  script:
+    - >
+      gradle raygun-spring-boot-starter:check
+      raygun-spring-boot-starter:jacocoTestReport
+      raygun-spring-boot-starter:jacocoTestCoverageVerification
+  coverage: '/    - Branch Coverage: ([0-9.]+)%/'
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - raygun-spring-boot-starter/build/test-results/test/TEST-*.xml
+    paths:
+      - raygun-spring-boot-starter/build/reports/jacoco/test/jacocoTestReport.xml
+
+check:starter:example:
+  extends:
+    - .pull-build-cache
+  stage: test
+  script:
+    - >
+      gradle raygun-spring-boot-starter-example:check
+      raygun-spring-boot-starter-example:jacocoTestReport
+      raygun-spring-boot-starter-example:jacocoTestCoverageVerification
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - raygun-spring-boot-starter-example/build/test-results/test/TEST-*.xml
+
+check:starter:example:web:
+  extends:
+    - .pull-build-cache
+  stage: test
+  script:
+    - >
+      gradle raygun-spring-boot-starter-example-web:check
+      raygun-spring-boot-starter-example-web:jacocoTestReport
+      raygun-spring-boot-starter-example-web:jacocoTestCoverageVerification
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - raygun-spring-boot-starter-example-web/build/test-results/test/TEST-*.xml
+
+check:starter:example:web-services:
+  extends:
+    - .pull-build-cache
+  stage: test
+  script:
+    - >
+      gradle raygun-spring-boot-starter-example-web-services:check
+      raygun-spring-boot-starter-example-web-services:jacocoTestReport
+      raygun-spring-boot-starter-example-web-services:jacocoTestCoverageVerification
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - raygun-spring-boot-starter-example-web-services/build/test-results/test/TEST-*.xml
+
+visualize:
+  extends:
+    - .pull-build-cache
+  stage: deploy
+  script: gradle raygun-spring-boot-starter:jacocoToCobertura
+  needs: ["check:starter"]
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: raygun-spring-boot-starter/build/reports/jacoco/test/cobertura-jacocoTestReport.xml
+    paths:
+      - raygun-spring-boot-starter/build/reports/jacoco/test/cobertura-jacocoTestReport.xml
+
+publish:company:snapshot:
+  extends:
+    - .publish
+    - .snapshot
+  script: gradle raygun-spring-boot-starter:publishMavenPublicationToCompanySnapshotRepository
+  environment:
+    name: snapshot
+    deployment_tier: staging
+
+publish:company:release:
+  extends:
+    - .publish
+    - .release
+  script: gradle raygun-spring-boot-starter:publishMavenPublicationToCompanyReleaseRepository
+  environment:
+    name: release
+    deployment_tier: production
+
+publish:central:snapshot:
+  extends:
+    - .publish
+    - .snapshot
+  script: gradle raygun-spring-boot-starter:publishMavenPublicationToCentralSnapshotRepository
+  environment:
+    name: snapshot
+    deployment_tier: staging
+
+publish:central:release:
+  extends:
+    - .publish
+    - .release
+  script: gradle raygun-spring-boot-starter:publishMavenPublicationToCentralReleaseRepository
+  environment:
+    name: release
+    deployment_tier: production
+
+pages:
+  extends:
+    - .release
+    - .pull-build-cache
+  stage: deploy
+  script:
+    - gradle raygun-spring-boot-starter:javadoc
+    - mkdir .public
+    - cp -r raygun-spring-boot-starter/build/docs/javadoc/* .public
+    - rm -rf public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+
+.publish:
+  extends:
+    - .pull-build-cache
+  stage: deploy
+
+.snapshot:
+  only:
+    - branches
+  except:
+    - tags
+
+.release:
+  only:
+    - tags
+  except:
+    - branches
+
+.pull-build-cache:
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - .gradle
+      - raygun-spring-boot-starter/build
+      - raygun-spring-boot-starter-example/build

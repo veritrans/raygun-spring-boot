@@ -1,0 +1,5 @@
+rootProject.name = 'raygun-spring-boot'
+include('raygun-spring-boot-starter')
+include('raygun-spring-boot-starter-example')
+include('raygun-spring-boot-starter-example-web')
+include('raygun-spring-boot-starter-example-web-services')

@@ -1,0 +1,2 @@
+# Imports for Spring Boot 2.7.x and above
+com.midtrans.raygun.autoconfigure.RaygunAutoConfiguration

@@ -1,0 +1,16 @@
+# Imports for Spring Boot 2.6.x and below
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.midtrans.raygun.autoconfigure.RaygunAutoConfiguration
+
+# AutoConfigureWebMvc auto-configuration imports
+org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc=\
+com.midtrans.raygun.autoconfigure.RaygunAutoConfiguration
+
+# AutoConfigureWebServiceServer auto-configuration imports
+org.springframework.boot.test.autoconfigure.webservices.server.AutoConfigureWebServiceServer=\
+com.midtrans.raygun.autoconfigure.RaygunAutoConfiguration
+
+# Spring Test ContextCustomizerFactories
+org.springframework.test.context.ContextCustomizerFactory=\
+com.midtrans.raygun.test.RaygunContextCustomizerFactory
