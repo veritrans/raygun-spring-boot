@@ -8,20 +8,20 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - name: Set up Java 11
-      uses: actions/setup-java@v4
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-    - name: Publish package
-      env:
-        CENTRAL_RELEASE_MAVEN_REPOSITORY_URL: ${{ secrets.CENTRAL_RELEASE_MAVEN_REPOSITORY_URL }}
-        CENTRAL_MAVEN_REPOSITORY_USERNAME: ${{ secrets.CENTRAL_MAVEN_REPOSITORY_USERNAME }}
-        CENTRAL_MAVEN_REPOSITORY_PASSWORD: ${{ secrets.CENTRAL_MAVEN_REPOSITORY_PASSWORD }}
-        GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: ./gradlew raygun-spring-boot-starter:publishMavenPublicationToCentralReleaseRepository
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - name: Publish package
+        env:
+          CENTRAL_RELEASE_MAVEN_REPOSITORY_URL: ${{ secrets.CENTRAL_RELEASE_MAVEN_REPOSITORY_URL }}
+          CENTRAL_MAVEN_REPOSITORY_USERNAME: ${{ secrets.CENTRAL_MAVEN_REPOSITORY_USERNAME }}
+          CENTRAL_MAVEN_REPOSITORY_PASSWORD: ${{ secrets.CENTRAL_MAVEN_REPOSITORY_PASSWORD }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew raygun-spring-boot-starter:publishMavenPublicationToCentralReleaseRepository
