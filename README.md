@@ -21,7 +21,7 @@ dependencies {
 }
 ```
 
-Set the `raygun.api-key` property with the Raygun API key retrieved from the Raygun Application settings page.
+Set the `raygun.api-key` property or `RAYGUN_APIKEY` environment variable with the Raygun API key retrieved from the Raygun Application settings page.
 
 A `RaygunTemplate` bean is auto-configured and can be autowired.
 
@@ -44,7 +44,7 @@ class UserService {
 }
 ```
 
-The Javadoc can be accessed [here](https://cash-management.pages.golabs.io/raygun-spring-boot/).
+The Javadoc can be accessed in [javadoc.io](https://javadoc.io/doc/com.midtrans/raygun-spring-boot-starter).
 
 ## Support
 
@@ -241,6 +241,17 @@ class UserTest {
     }
 }
 ```
+
+## Example Applications
+
+There are example Spring Boot applications provided in the repository.
+
+Please add the `raygun.api-key` in the application's `src/main/resources/application.properties` file.
+
+Commands for MacOS and Linux:
+- Command Line Application: `./gradlew raygun-spring-boot-starter:bootRun`
+- Web Servlets Application: `./gradlew raygun-spring-boot-starter-web:bootRun`
+- Web Services Application: `./gradlew raygun-spring-boot-starter-web-services:bootRun`
 
 ## Contributing
 
