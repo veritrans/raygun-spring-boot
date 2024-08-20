@@ -23,12 +23,18 @@ dependencies {
 
 Set the `raygun.api-key` property or `RAYGUN_APIKEY` environment variable with the Raygun API key retrieved from the Raygun Application settings page.
 
+In your `application.properties` file.
+
+```
+raygun.api-key={your-api-key-value}
+```
+
 A `RaygunTemplate` bean is auto-configured and can be autowired.
 
 ```java
 @Component
 class UserService {
-    private final RaygunTemplate;
+    final RaygunTemplate;
 
     UserService(RaygunTemplate raygunTemplate) {
         this.raygunTemplate = raygunTemplate;
