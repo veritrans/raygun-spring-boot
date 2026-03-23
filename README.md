@@ -34,19 +34,19 @@ A `RaygunTemplate` bean is auto-configured and can be autowired.
 ```java
 @Component
 class UserService {
-    final RaygunTemplate;
+  final RaygunTemplate;
 
-    UserService(RaygunTemplate raygunTemplate) {
-        this.raygunTemplate = raygunTemplate;
-    }
+  UserService(RaygunTemplate raygunTemplate) {
+    this.raygunTemplate = raygunTemplate;
+  }
 
-    void businessLogic() {
-        try {
-            //some business logic...
-        } catch (Exception ex) {
-            raygunTemplate.send(ex);
-        }
+  void businessLogic() {
+    try {
+      //some business logic...
+    } catch (Exception ex) {
+      raygunTemplate.send(ex);
     }
+  }
 }
 ```
 
@@ -83,36 +83,35 @@ If the uncaught exceptions are sent in `@ExceptionHandler` methods, the uncaught
 @RestController
 class UserRestController {
 
-    //The IndexOutOfBoundsException will be sent to Raygun once
-    @GetMapping("/uncaught")
-    void uncaught() {
-        throw new IndexOutOfBoundsException();
-    }
+  //The IndexOutOfBoundsException will be sent to Raygun once
+  @GetMapping("/uncaught")
+  void uncaught() {
+    throw new IndexOutOfBoundsException();
+  }
 
-    //The NullPointerException will be sent to Raygun twice
-    @GetMapping("/controllerAdvice")
-    void controllerAdvice() {
-        throw new NullPointerException();
-    }
+  //The NullPointerException will be sent to Raygun twice
+  @GetMapping("/controllerAdvice")
+  void controllerAdvice() {
+    throw new NullPointerException();
+  }
 
-    //The response will be depends on the annotation and the custom Exception will be sent to Raygun
-    @GetMapping("/responseStatus")
-    void responseStatus() {
-        throw new ResponseStatusException();
-    }
+  //The response will be depends on the annotation and the custom Exception will be sent to Raygun
+  @GetMapping("/responseStatus")
+  void responseStatus() {
+    throw new ResponseStatusException();
+  }
 }
 
 @ControllerAdvice
 class UserControllerAdvice {
 
-    @Autowired
-    RaygunTemplate raygunTemplate;
+  @Autowired RaygunTemplate raygunTemplate;
 
-    @ExceptionHandler
-    ResponseEntity<?> handle(NullPointerException ex) {
-        raygunTemplate.send(ex);
-        return ResponseEntity.internalServerError().build();
-    }
+  @ExceptionHandler
+  ResponseEntity<?> handle(NullPointerException ex) {
+    raygunTemplate.send(ex);
+    return ResponseEntity.internalServerError().build();
+  }
 }
 
 @ResponseStatus(code = HttpStatus.BAD_GATEWAY, reason = "Bad Gateway")
@@ -131,15 +130,13 @@ Uncaught exceptions will still be caught and logged, but they are not sent to Ra
 @WebMvcTest
 class UserWebMvcTest {
 
-    @Autowired
-    MockMvc mockMvc;
+  @Autowired MockMvc mockMvc;
 
-    //Exceptions thrown by controller methods are caught and logged, but not sent to Raygun
-    @Test
-    void responseStatus() throws Exception {
-        mockMvc.perform(get("/responseStatus"))
-            .andExpect(status().isBadGateway());
-    }
+  //Exceptions thrown by controller methods are caught and logged, but not sent to Raygun
+  @Test
+  void responseStatus() throws Exception {
+    mockMvc.perform(get("/responseStatus")).andExpect(status().isBadGateway());
+  }
 }
 ```
 
@@ -155,17 +152,17 @@ By default, responses for uncaught exceptions are SOAP Fault with the exception'
 @Endpoint
 class UserEndpoint {
 
-    //The Fault response reason will be the exception message.
-    @PayloadRoot(localPart = "uncaught")
-    void uncaught() {
-        throw new IndexOutOfBoundsException();
-    }
+  //The Fault response reason will be the exception message.
+  @PayloadRoot(localPart = "uncaught")
+  void uncaught() {
+    throw new IndexOutOfBoundsException();
+  }
 
-    //The Fault response reason will be the annotation's faultStringOrReason if set or the exception message if not set.
-    @PayloadRoot(localPart = "soapFault")
-    void soapFault() {
-        throw new SoapFaultException();
-    }
+  //The Fault response reason will be the annotation's faultStringOrReason if set or the exception message if not set.
+  @PayloadRoot(localPart = "soapFault")
+  void soapFault() {
+    throw new SoapFaultException();
+  }
 }
 
 @SoapFault(faultCode = FaultCode.SERVER, faultStringOrReason = "soapFault")
@@ -183,16 +180,14 @@ Uncaught exceptions will still be caught and logged, but they are not sent to Ra
 ```java
 @WebServiceServerTest
 class UserWebServiceServerTest {
+  @Autowired MockWebServiceClient mockWebServiceClient;
 
-    @Autowired
-    MockWebServiceClient mockWebServiceClient;
-
-    @Test //Exceptions thrown by endpoint methods are caught and logged, but not sent to Raygun
-    void uncaught() {
-        mockWebServiceClient
-            .sendRequest(RequestCreators.withPayload(new StringSource("<uncaught></uncaught>")))
-            .andExpect(ResponseMatchers.serverOrReceiverFault());
-    }
+  @Test //Exceptions thrown by endpoint methods are caught and logged, but not sent to Raygun
+  void uncaught() {
+    mockWebServiceClient
+        .sendRequest(RequestCreators.withPayload(new StringSource("<uncaught></uncaught>")))
+        .andExpect(ResponseMatchers.serverOrReceiverFault());
+  }
 }
 ```
 
@@ -204,10 +199,10 @@ To exclude exceptions being sent, register exception types through a `RaygunExce
 @Component
 class UserRaygunExcludeExceptionRegistrar implements RaygunExceptionExcludeRegistrar {
 
-    @Override
-    public void registerExceptions(RaygunExceptionExcludeRegistry registry) {
-        registry.registerException(RuntimeException.class);
-    }
+  @Override
+  public void registerExceptions(RaygunExceptionExcludeRegistry registry) {
+    registry.registerException(RuntimeException.class);
+  }
 }
 ```
 
@@ -236,15 +231,13 @@ This will apply to `@SpringBootTest` and test slices.
 ```java
 @SpringBootTest
 class UserTest {
+  @Autowired RaygunTemplate raygunTemplate;
 
-    @Autowired
-    RaygunTemplate raygunTemplate;
-
-    //The RaygunTemplate does not send the exception to Raygun
-    @Test
-    void contextLoads() {
-        raygunTemplate.send(new IllegalArgumentException());
-    }
+  //The RaygunTemplate does not send the exception to Raygun
+  @Test
+  void contextLoads() {
+    raygunTemplate.send(new IllegalArgumentException());
+  }
 }
 ```
 
