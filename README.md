@@ -17,7 +17,7 @@ Add the dependency in the implementation configuration.
 
 ```
 dependencies {
-    implementation 'com.midtrans:raygun-spring-boot-starter:0.7.3'
+    implementation 'com.midtrans:raygun-spring-boot-starter:0.8.0'
 }
 ```
 
@@ -180,6 +180,7 @@ Uncaught exceptions will still be caught and logged, but they are not sent to Ra
 ```java
 @WebServiceServerTest
 class UserWebServiceServerTest {
+
   @Autowired MockWebServiceClient mockWebServiceClient;
 
   @Test //Exceptions thrown by endpoint methods are caught and logged, but not sent to Raygun
@@ -231,6 +232,7 @@ This will apply to `@SpringBootTest` and test slices.
 ```java
 @SpringBootTest
 class UserTest {
+
   @Autowired RaygunTemplate raygunTemplate;
 
   //The RaygunTemplate does not send the exception to Raygun
